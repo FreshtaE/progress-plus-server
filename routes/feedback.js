@@ -6,9 +6,12 @@ const {
   getAllFeedback,
   postFeedback,
   populateDemoData,
+  updateFeedback,
 } = require('../models/index');
 
-var { checkIfAuthenticated } = require('../src/cors/auth.middleware');
+var {
+  checkIfAuthenticated,
+} = require('../controllers/middleware/auth.middleware');
 
 // 1. GET requests to view the bootcamper feedback
 
@@ -90,5 +93,24 @@ router.post('/data', checkIfAuthenticated, async function (req, res, next) {
     res.json({ success: false, data: err });
   }
 });
+
+//Patch req
+router.patch(
+  '/:feedbackid',
+  checkIfAuthenticated,
+  async function (req, res, next) {
+    try {
+      // console.log('feedback updating...');
+      console.log(req.body);
+      const { feedbackid } = req.params;
+      const { body } = req;
+      const result = await updateFeedback(feedbackid, body);
+      res.json({ success: true, data: result });
+      //console.log('feedback is updated');
+    } catch (err) {
+      res.json({ success: false, data: err.message });
+    }
+  }
+);
 
 module.exports = router;
